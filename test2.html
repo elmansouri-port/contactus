@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+
+<style>
+  /* The Modal (background) */
+  .modal {
+    display: block; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 999; /* Sit on top */
+    top: 0;
+    left: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px; /* Base padding for all screens */
+    box-sizing: border-box;
+  }
+
+  /* The Close Button */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .form-container {
+    background: #fff;
+    border-radius: 8px;
+    padding: 32px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+    overflow: hidden;
+    /* Fixed height to prevent jumping */
+    min-height: 580px;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    box-sizing: border-box;
+  }
+
+  .form-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-step {
+    display: none;
+    animation: fadeIn 0.3s ease;
+    flex: 1;
+  }
+  .form-step.active {
+    display: block;
+  }
+  .form-step.final {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .form-group {
+    position: relative;
+    margin-bottom: 24px;
+  }
+  .input-group {
+    position: relative;
+    display: block;
+  }
+  .floating-label {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    color: #999;
+    font-size: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    background: white;
+    padding: 0 4px;
+    z-index: 1;
+  }
+  .floating-label.active {
+    top: -8px;
+    font-size: 12px;
+    color: #492586;
+    font-weight: 500;
+  }
+  input,
+  select,
+  .textareaa {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid #e8e8e8;
+    border-radius: 8px;
+    font-size: 16px;
+    background: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    box-sizing: border-box;
+  }
+  input:focus,
+  select:focus,
+  .textareaa:focus {
+    border-color: #492586;
+    box-shadow: 0 0 0 4px rgba(106, 27, 154, 0.1);
+  }
+  select:hover,
+  .textareaa:hover {
+    border-color: #c4c4c4;
+  }
+  .textareaa {
+    min-height: 100px;
+    resize: vertical;
+  }
+  select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 40px;
+  }
+
+  /* Custom Selection Cards */
+  .selection-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .selection-cards.grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+  }
+
+  .selection-card {
+    border: 2px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+    position: relative;
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+  }
+
+  .selection-card.full-width {
+    flex: 1 1 100%;
+    text-align: left;
+    padding: 16px;
+  }
+
+  .selection-card {
+    border-color: #c4c4c4;
+    transform: translateY(-1px);
+  }
+  .selection-card:hover {
+    transform: translateY(-1px);
+  }
+
+  .selection-card.selected {
+    border-color: #492586;
+    background: rgba(106, 27, 154, 0.05);
+    box-shadow: 0 0 0 2px rgba(106, 27, 154, 0.1);
+  }
+
+  .selection-card-title {
+    font-weight: 600;
+    color: #2c2c2c;
+    margin-bottom: 2px;
+    font-size: 14px;
+  }
+
+  .selection-card.full-width .selection-card-title {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  .selection-card-desc {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.3;
+  }
+
+  .selection-card.full-width .selection-card-desc {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .selection-card::after {
+    content: "";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e8e8e8;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+
+  .selection-card.selected::after {
+    background: #492586;
+    border-color: #492586;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 16 16'%3e%3cpath d='M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z'/%3e%3c/svg%3e");
+    background-size: 10px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  /* Yes/No compact cards */
+  .selection-cards.compact {
+    display: flex;
+    gap: 12px;
+    max-width: 300px;
+  }
+
+  .selection-card.compact {
+    flex: 1;
+    padding: 12px 16px;
+    text-align: center;
+  }
+
+  .selection-card.compact .selection-card-title {
+    margin-bottom: 0;
+    font-size: 16px;
+  }
+
+  .selection-card.compact::after {
+    display: none;
+  }
+
+  /* Custom styled select */
+  .styled-select {
+    position: relative;
+  }
+
+  .styled-select select {
+    background: white;
+    border: 2px solid #e8e8e8;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 16px;
+    width: 100%;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236a1b9a' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 16px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 48px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+  }
+
+  .styled-select select:focus {
+    border-color: #492586;
+    box-shadow: 0 0 0 4px rgba(106, 27, 154, 0.1);
+    outline: none;
+  }
+
+  .styled-select select:hover {
+    border-color: #c4c4c4;
+  }
+
+  /* Project Details Animation */
+  .project-details-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+  }
+
+  .project-details-container.active {
+    max-height: 200px;
+    opacity: 1;
+    margin-top: 20px;
+  }
+
+  .project-details-container.dimmed {
+    max-height: 200px;
+    opacity: 0.3;
+    margin-top: 20px;
+    pointer-events: none;
+  }
+
+  .btn-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+    gap: 16px;
+  }
+  .button {
+    padding: 14px 24px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .button-next {
+    background: #7e57c2;
+    color: white;
+    flex: 1;
+  }
+  .button-next:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(106, 27, 154, 0.3);
+  }
+  .button-prev {
+    background: transparent;
+    color: #7e57c2;
+    border: 1px solid #e8e8e8;
+  }
+  .button-prev:hover {
+    background: rgb(224, 216, 225);
+    background: rgba(106, 27, 154, 0.05);
+  }
+  .progress-barf {
+    height: 4px;
+    background: #e8e8e8;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 32px;
+
+  }
+  .progress {
+    height: 100%;
+    background: linear-gradient(90deg, #492586, #492586);
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .first {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .logo-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(45deg, #492586, #492586);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+  }
+  .form-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c2c2c;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0f0f0;
+  }
+  .final-title {
+    align-items: center;
+    color: #2c2c2c;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0f0f0;
+  }
+  .checkbox-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .checkbox-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #492586;
+  }
+  .checkbox-group label {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+    line-height: 1.4;
+  }
+
+  p {
+    align-content: center;
+  }
+
+  input {
+    border-color: #c4c4c4;
+  }
+
+  .wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .checkmark__circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: #7ac142;
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+  }
+  .checkmark {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 2;
+    stroke: #fff;
+    stroke-miterlimit: 10;
+    margin: 10% auto;
+    box-shadow: inset 0px 0px 0px #7ac142;
+    animation: fill 0.4s ease-in-out 0.4s forwards,
+      scale 0.3s ease-in-out 0.9s both;
+  }
+  .checkmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+  }
+  @keyframes stroke {
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes scale {
+    0%,
+    100% {
+      transform: none;
+    }
+    50% {
+      transform: scale3d(1.1, 1.1, 1);
+    }
+  }
+  @keyframes fill {
+    100% {
+      box-shadow: inset 0px 0px 0px 45px #7ac142;
+    }
+  }
+
+  .close-button {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.3s ease;
+    z-index: 2;
+  }
+
+  .close-button:hover {
+    color: #333;
+  }
+
+  .btn-container.final-buttons {
+    justify-content: center;
+  }
+
+  .continue-btn {
+    background-color: #7e57c2;
+    color: white;
+    padding: 14px 24px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+  }
+  .fl-cont {
+    display: flex;
+    gap: 10px;
+  }
+  .thetitle {
+    margin: 0; /* Reset margin */
+    padding: 0; /* Reset padding */
+    font-size: 2em; /* Default font size for h2 */
+    font-weight: bold; /* Default font weight for h2 */
+    color: black; /* Inherit color from parent or use default */
+    line-height: 1.2; /* Default line height */
+  }
+
+  /* Enhanced Mobile Responsive Styles */
+  @media (max-width: 376px) {
+    .modal {
+      padding: 15px;
+      align-items: flex-start;
+    }
+
+    .form-container {
+      padding: 20px;
+      max-width: 100%;
+      min-height: auto;
+      margin: 0;
+      border-radius: 12px;
+    }
+
+    .selection-cards.grid-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .selection-card {
+      min-width: auto;
+    }
+
+    .fl-cont {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .btn-container {
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .button {
+      padding: 12px 20px;
+      font-size: 14px;
+    }
+
+    .form-section-title {
+      font-size: 16px;
+    }
+
+    .thetitle {
+      font-size: 1.5em;
+    }
+
+    .first {
+      margin-bottom: 20px;
+    }
+
+    .progress-barf {
+      margin-bottom: 24px;
+    }
+  }
+
+  @media (max-width: 476px) {
+    .modal {
+      padding-left: 10px;
+      padding-right: 10px;
+      align-items: center;
+    }
+
+    .form-container {
+      padding: 16px;
+      border-radius: 8px;
+    }
+
+    .selection-cards {
+      gap: 6px;
+    }
+
+    .selection-card {
+      padding: 10px;
+    }
+
+    .selection-card.full-width {
+      padding: 12px;
+    }
+
+    .button {
+      padding: 10px 16px;
+      font-size: 14px;
+      min-width: 80px;
+    }
+
+    .btn-container {
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .close-button {
+      top: 8px;
+      right: 12px;
+      font-size: 20px;
+    }
+
+    .checkbox-group {
+      margin-top: 12px;
+    }
+
+    .checkbox-group label {
+      font-size: 13px;
+    }
+
+    input,
+    select,
+    .textareaa {
+      padding: 12px;
+      font-size: 14px;
+    }
+
+    .floating-label {
+      font-size: 14px;
+      left: 12px;
+      top: 12px;
+    }
+
+    .floating-label.active {
+      font-size: 11px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .modal {
+      padding: 8px;
+      padding-top: 3px;
+    }
+
+    .form-container {
+      padding: 12px;
+    }
+
+    .selection-cards.compact {
+      max-width: 100%;
+    }
+
+    .thetitle {
+      font-size: 1.3em;
+    }
+
+    .first img {
+      width: 40px;
+      height: 40px;
+    }
+
+    .button {
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+  }
+.step-counter {
+    position: absolute;
+    /* top: 20px; */
+    right: 60px;
+    font-size: 20px;
+    color: #7e57c2;
+    font-weight: 900;
+    display: none;
+}
+
+.step-counter.visible {
+  display: block;
+}
+</style>
+
+
+  </head>
+  <body>
+<!-- The Modal -->
+<div id="myModal" class="modal">
+  <!-- Modal content -->
+  <div class="form-container">
+    <button id="closeBtn" class="close-button" aria-label="Close form">
+      ×
+    </button>
+
+    <div class="first">
+      <img
+        src="https://www.openrainbow.com/img/front/rainbow-color-white-bg-logo.png"
+        alt="rainbow-logo"
+        width="50"
+      />
+      <h2 class="thetitle">Contact Us</h2>
+      <div class="step-counter" id="stepCounter">1/6</div>
+    </div>
+
+    <div class="form-content">
+      <form id="multiStepForm">
+        <!-- Step 1: Personal Information -->
+        <div class="form-step active">
+          <div class="form-section-title">Personal Information</div>
+          <div class="fl-cont">
+            <div class="form-group">
+              <div class="input-group">
+                <input type="text" id="firstName" required />
+                <label class="floating-label" for="firstName"
+                  >First Name *</label
+                >
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="input-group">
+                <input type="text" id="lastName" required />
+                <label class="floating-label" for="lastName">Last Name *</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="input-group">
+              <input type="email" id="email" required />
+              <label class="floating-label" for="email">Email Address *</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="input-group">
+              <input type="text" id="phone" required />
+              <label class="floating-label" for="phone">Number *</label>
+            </div>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="consent" required />
+            <label for="consent"
+              >I agree to receive communications and understand the privacy
+              policy.</label
+            >
+          </div>
+        </div>
+
+        <!-- Step 2: Company Information -->
+        <div class="form-step">
+          <div class="form-section-title">Company Information</div>
+          <div class="form-group">
+            <div class="input-group">
+              <input type="text" id="company" required />
+              <label class="floating-label" for="company">Company Name *</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="input-group">
+              <input type="text" id="industry" />
+              <label class="floating-label" for="industry">Industry</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <div
+              class="form-section-title"
+              style="margin-bottom: 12px; font-size: 16px"
+            >
+              Select company size:
+            </div>
+            <div class="selection-cards grid-layout">
+              <div class="selection-card full-width" data-value="small">
+                <div class="selection-card-title">Small</div>
+                <div class="selection-card-desc">1-50 employees</div>
+              </div>
+              <div class="selection-card full-width" data-value="medium">
+                <div class="selection-card-title">Medium</div>
+                <div class="selection-card-desc">51-250 employees</div>
+              </div>
+              <div class="selection-card full-width" data-value="large">
+                <div class="selection-card-title">Large</div>
+                <div class="selection-card-desc">251-1000 employees</div>
+              </div>
+            </div>
+            <input type="hidden" id="companySize" required />
+          </div>
+        </div>
+
+        <!-- Step 3: Professional Information -->
+        <div class="form-step">
+          <div class="form-section-title">Professional Information</div>
+          <div class="form-group">
+            <div class="input-group">
+              <input type="text" id="role" required />
+              <label class="floating-label" for="role">Job Title/Role *</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <div
+              class="form-section-title"
+              style="margin-bottom: 12px; font-size: 16px"
+            >
+              Are you a...?
+            </div>
+            <div class="selection-cards grid-layout">
+              <div class="selection-card full-width" data-value="client">
+                <div class="selection-card-title">Client / Future User</div>
+                <div class="selection-card-desc">
+                  Looking to use our solutions for your business needs
+                </div>
+              </div>
+              <div class="selection-card full-width" data-value="partner">
+                <div class="selection-card-title">Partner / Reseller</div>
+                <div class="selection-card-desc">
+                  Interested in partnering with us or reselling our products
+                </div>
+              </div>
+              <div class="selection-card full-width" data-value="other">
+                <div class="selection-card-title">Other</div>
+                <div class="selection-card-desc">
+                  Different type of inquiry or collaboration
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="userType" required />
+          </div>
+        </div>
+
+        <!-- Step 4: Project Requirements -->
+        <div class="form-step">
+          <div class="form-section-title">Your Requirements</div>
+          <div class="form-group">
+            <div
+              class="form-section-title"
+              style="margin-bottom: 12px; font-size: 16px"
+            >
+              Primary Objective
+            </div>
+            <div class="selection-cards">
+              <div class="selection-card" data-value="discover">
+                <div class="selection-card-title">Discover</div>
+                <div class="selection-card-desc">Learn about solutions</div>
+              </div>
+              <div class="selection-card" data-value="quote">
+                <div class="selection-card-title">Quote</div>
+                <div class="selection-card-desc">Get pricing info</div>
+              </div>
+              <div class="selection-card" data-value="contact">
+                <div class="selection-card-title">Contact</div>
+                <div class="selection-card-desc">Be contacted by team</div>
+              </div>
+              <div class="selection-card" data-value="resell">
+                <div class="selection-card-title">Resell</div>
+                <div class="selection-card-desc">Partnership opportunity</div>
+              </div>
+              <div class="selection-card" data-value="integrate">
+                <div class="selection-card-title">Integration</div>
+                <div class="selection-card-desc">System integration</div>
+              </div>
+              <div class="selection-card" data-value="cooperate">
+                <div class="selection-card-title">Cooperation</div>
+                <div class="selection-card-desc">Business partnership</div>
+              </div>
+            </div>
+            <input type="hidden" id="objective" required />
+          </div>
+        </div>
+
+        <!-- Step 5: Project Details -->
+        <div class="form-step">
+          <div class="form-section-title">Project Details</div>
+          <div class="form-group">
+            <div
+              class="form-section-title"
+              style="margin-bottom: 12px; font-size: 16px"
+            >
+              Do you have a project in progress?
+            </div>
+            <div class="selection-cards compact">
+              <div class="selection-card compact selected" data-value="yes">
+                <div class="selection-card-title">Yes</div>
+              </div>
+              <div class="selection-card compact" data-value="no">
+                <div class="selection-card-title">No</div>
+              </div>
+            </div>
+            <input type="hidden" id="projectStatus" value="yes" required />
+
+            <div
+              class="project-details-container active"
+              id="projectDetailsContainer"
+            >
+              <div class="input-group" style="margin-top: 20px">
+                <textarea
+                  class="textareaa"
+                  id="projectDetails"
+                  placeholder="Tell us about your project, specific needs, challenges, or requirements..."
+                ></textarea>
+                <label class="floating-label active" for="projectDetails"
+                  >Project Details</label
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 6: Additional Information -->
+        <div class="form-step">
+          <div class="form-section-title">Additional Information</div>
+          <div class="form-group">
+            <div class="input-group">
+              <textarea
+                class="textareaa" style="min-height: 200px;"
+                id="message"
+                placeholder="Any additional information or specific questions?"
+              ></textarea>
+              <label class="floating-label active" for="message"
+                >Your Message</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 7: Final Message -->
+        <div class="form-step">
+          <h2 class="final-title">SUCCESS !!!</h2>
+          <div class="wrapper"></div>
+          <p>
+            Thank you for your submission! Our team will reach out to you within
+            the next 24 hours.
+          </p>
+        </div>
+      </form>
+    </div>
+
+    <div class="btn-container">
+      <button
+        type="button"
+        class="button button-prev"
+        id="prevBtn"
+        style="display: none"
+      >
+        ← Back
+      </button>
+      
+      <button type="button" class="button button-next" id="nextBtn">
+        Next →
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --------------------- Global Variables ---------------------
+  var steps = document.querySelectorAll(".form-step");
+  var progress = document.getElementById("progress");
+  var projectDetailsContainer = document.getElementById("projectDetailsContainer");
+  var formContainer = document.querySelector(".form-container");
+  var btnContainer = document.querySelector(".btn-container");
+  var currentStep = 0;
+
+  // --------------------- Initialization ---------------------
+  initFloatingLabels();
+  initSelectionCards();
+  showStep(currentStep); // Initial step rendering
+
+  // --------------------- Selection Cards ---------------------
+  function initSelectionCards() {
+    var selectionCards = document.querySelectorAll(".selection-card");
+    for (var i = 0; i < selectionCards.length; i++) {
+      selectionCards[i].addEventListener("click", function () {
+        var card = this;
+        var parentGroup = card.closest(".selection-cards");
+        var hiddenInput = parentGroup.nextElementSibling;
+
+        var siblings = parentGroup.querySelectorAll(".selection-card");
+        for (var j = 0; j < siblings.length; j++) {
+          siblings[j].classList.remove("selected");
+        }
+
+        card.classList.add("selected");
+        hiddenInput.value = card.getAttribute("data-value");
+
+        if (hiddenInput.id === "projectStatus") {
+          if (card.getAttribute("data-value") === "yes") {
+            projectDetailsContainer.classList.remove("dimmed");
+            projectDetailsContainer.classList.add("active");
+          } else {
+            projectDetailsContainer.classList.remove("active");
+            projectDetailsContainer.classList.add("dimmed");
+          }
+        }
+      });
+    }
+  }
+
+  // --------------------- Floating Labels ---------------------
+  function initFloatingLabels() {
+    var inputs = document.querySelectorAll("input[type='text'], input[type='email'], textarea");
+    for (var i = 0; i < inputs.length; i++) {
+      (function (input) {
+        var label = input.parentElement.querySelector(".floating-label");
+        if (label) {
+          if (input.value) label.classList.add("active");
+
+          input.addEventListener("focus", function () {
+            label.classList.add("active");
+          });
+
+          input.addEventListener("blur", function () {
+            if (!input.value) label.classList.remove("active");
+          });
+
+          input.addEventListener("input", function () {
+            if (input.value) label.classList.add("active");
+            else label.classList.remove("active");
+          });
+        }
+      })(inputs[i]);
+    }
+  }
+
+  // --------------------- Step Navigation ---------------------
+  function showStep(index) {
+    var stepCounter = document.getElementById("stepCounter");
+
+    // Show step counter only for steps 1-6 (not for step 0 or final step)
+    if (index >= 1 && index < steps.length -1) {
+      stepCounter.textContent = (index + 1) + "/" + (steps.length - 1);
+      stepCounter.classList.add("visible");
+    } else {
+      stepCounter.classList.remove("visible");
+    }
+
+    for (var i = 0; i < steps.length; i++) {
+      var step = steps[i];
+      step.classList.remove("active", "final");
+
+      if (i === index) {
+        if (i === steps.length - 1) {
+          step.classList.add("final");
+          var wrapper = step.querySelector(".wrapper");
+
+          if (wrapper && !wrapper.querySelector(".checkmark")) {
+            var svgMarkup =
+              '<svg class="checkmark" viewBox="0 0 52 52">' +
+              '<circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />' +
+              '<path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />' +
+              "</svg>";
+            wrapper.insertAdjacentHTML("beforeend", svgMarkup);
+          }
+        } else {
+          step.classList.add("active");
+        }
+      }
+    }
+
+    if (index === steps.length - 1) {
+      btnContainer.classList.add("final-buttons");
+      btnContainer.innerHTML =
+        '<button type="button" class="continue-btn" onclick="handleContinue()">Continue to browse</button>';
+    } else {
+      btnContainer.classList.remove("final-buttons");
+      btnContainer.innerHTML =
+        '<button type="button" class="button button-prev" id="prevBtn"' +
+        (index === 0 ? ' style="display:none"' : "") +
+        ">← Back</button>" +
+        '<button type="button" class="button button-next" id="nextBtn">' +
+        (index === steps.length - 2 ? "Send Message ✓" : "Next →") +
+        "</button>";
+
+      var nextBtn = document.getElementById("nextBtn");
+      if (nextBtn) nextBtn.addEventListener("click", handleNext);
+
+      var prevBtn = document.getElementById("prevBtn");
+      if (prevBtn) prevBtn.addEventListener("click", handlePrev);
+    }
+  }
+
+function validateCurrentStep() {
+    var currentStepElement = steps[currentStep];
+    var requiredFields = currentStepElement.querySelectorAll(
+        "input[required], select[required]"
+    );
+
+    // Special validation for first step - consent must be checked
+    if (currentStep === 0) {
+        var consentCheckbox = document.getElementById("consent");
+        if (!consentCheckbox || !consentCheckbox.checked) {
+            if (consentCheckbox) {
+                consentCheckbox.focus();
+                var checkboxGroup = consentCheckbox.closest(".checkbox-group");
+                if (checkboxGroup) {
+                    checkboxGroup.style.border = "2px solid #e53e3e";
+                    setTimeout(function () {
+                        checkboxGroup.style.border = "";
+                    }, 3000);
+                }
+            }
+            return false;
+        }
+    }
+
+    for (var i = 0; i < requiredFields.length; i++) {
+        var field = requiredFields[i];
+        if (!field.value.trim()) {
+            if (field.type === "hidden") {
+                var parentGroup = field.previousElementSibling;
+                var selected = parentGroup.querySelector(".selection-card.selected");
+                if (!selected) {
+                    parentGroup.style.border = "2px solid #e53e3e";
+                    setTimeout(function () {
+                        parentGroup.style.border = "";
+                    }, 3000);
+                    return false;
+                }
+            } else {
+                field.focus();
+                field.style.borderColor = "#e53e3e";
+                setTimeout(function () {
+                    field.style.borderColor = "";
+                }, 3000);
+                return false;
+            }
+        }
+
+        // Email validation
+        if (field.type === "email" && !isValidEmail(field.value)) {
+            field.focus();
+            field.style.borderColor = "#e53e3e";
+            setTimeout(function () {
+                field.style.borderColor = "";
+            }, 3000);
+            return false;
+        }
+    }
+    return true;
+}
+
+function isValidEmail(email) {
+    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+}
+  // --------------------- Data Collection ---------------------
+  function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(";");
+    for (var i = 0; i < ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) === " ") c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  }
+
+  function collectCurrentStepData() {
+    var data = {};
+    
+    if (currentStep === 0) {
+      // Step 1 data
+      var fieldIds = ["firstName", "lastName", "email", "phone"];
+      for (var i = 0; i < fieldIds.length; i++) {
+        var id = fieldIds[i];
+        var element = document.getElementById(id);
+        if (element) data[id] = element.value;
+      }
+      
+      var consentCheckbox = document.getElementById("consent");
+      if (consentCheckbox) {
+        data.consent = consentCheckbox.checked;
+      }
+    }
+    
+    return data;
+  }
+
+  function collectFormData() {
+    var data = {};
+    var fieldIds = [
+      "firstName",
+      "lastName",
+      "email",
+      "phone",
+      "company",
+      "industry",
+      "companySize",
+      "role",
+      "userType",
+      "objective",
+      "projectStatus",
+      "projectDetails",
+      "message",
+    ];
+
+    for (var i = 0; i < fieldIds.length; i++) {
+      var id = fieldIds[i];
+      var element = document.getElementById(id);
+      if (element) data[id] = element.value;
+    }
+
+    var consentCheckbox = document.getElementById("consent");
+    if (consentCheckbox) {
+      data.consent = consentCheckbox.checked;
+    }
+
+    return data;
+  }
+
+  function collectCookieData() {
+    return {
+      cnt: parseInt(getCookie("cnt")) || null,
+      landing: getCookie("lpg"),
+      referrer: document.referrer,
+      utm_campaign: getCookie("utm_campaign"),
+      utm_medium: getCookie("utm_medium"),
+      utm_source: getCookie("utm_source"),
+      ip_adress: getCookie("visitor_ip")
+    };
+  }
+
+  function sendToWebhook(formData, cookieData, stepNumber) {
+    var webhookUrl = "https://hook.eu1.make.com/82o8l7lo4mufnjb1frqtpe6bopag7ceu"; //"https://hook.eu2.make.com/pek47wkw2gnfg9xnswvjmdgya7f6s25f";
+
+    var payload = {
+      form_data: formData,
+      cookie_data: cookieData,
+      step: stepNumber.toString(),
+      timestamp: new Date().toISOString(),
+      page_url: window.location.href,
+      hsid : "emptyfor now",
+      tag: "1",
+    };
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", webhookUrl, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200 || xhr.status === 201) {
+          console.log("Data sent successfully:", xhr.responseText);
+        } else {
+          console.error("Error sending data:", xhr.status, xhr.responseText);
+        }
+      }
+    };
+
+    xhr.onerror = function () {
+      console.error("Network error occurred while sending to webhook");
+    };
+
+    try {
+      xhr.send(JSON.stringify(payload));
+    } catch (e) {
+      console.error("Error sending data:", e);
+    }
+  }
+
+  // --------------------- Navigation ---------------------
+  function handleNext() {
+    if (!validateCurrentStep()) {
+      return;
+    }
+
+    if (currentStep < steps.length - 2) {
+      // Send data for first step after validation
+      if (currentStep === 0) {
+        var firstStepData = collectCurrentStepData();
+        var cookieData = collectCookieData();
+        sendToWebhook(firstStepData, cookieData, "1");
+      }
+      
+      currentStep++;
+      showStep(currentStep);
+    } else {
+      // Final submission - send all data with final step number
+      var formData = collectFormData();
+      var cookieData = collectCookieData();
+      var finalStepNumber = steps.length - 1; // This will be "6" for the final step
+      sendToWebhook(formData, cookieData, finalStepNumber.toString());
+      currentStep++;
+      showStep(currentStep);
+    }
+  }
+
+  function handlePrev() {
+    if (currentStep > 0) {
+      currentStep--;
+      showStep(currentStep);
+    }
+  }
+
+  function handleContinue() {
+    var modal = document.getElementById("myModal");
+    if (modal) {
+      modal.remove();
+    }
+  }
+</script>
+
+<script>
+  // --------------------- Modal Logic ---------------------
+  var modal = document.getElementById("myModal");
+  var btn = document.getElementById("myBtn");
+  var span = document.getElementsByClassName("close-button")[0];
+
+  if (span) {
+    span.onclick = function () {
+      if (modal) {
+        modal.remove();
+      }
+    };
+  }
+
+  window.onclick = function (event) {
+    if (event.target == modal && modal) {
+      modal.remove();
+    }
+  };
+</script>
+  </body>
+</html>
